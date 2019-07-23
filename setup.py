@@ -13,5 +13,6 @@ setup(name='streamplot',
       install_requires=[
           'numpy',
           'pyqtgraph',
+          'pyqt5'
       ],
       zip_safe=False)

@@ -2,12 +2,16 @@ import sys
 import time
 import collections
 import numpy as np
+import traceback
+
 try:
 	import pyqtgraph as pg
 	from pyqtgraph.Qt import QtGui, QtCore
 	pg.setConfigOption('background', 'w')
 except Exception as e:
 	print ("Unable to import pyqtgraph")
+	traceback.print_exc()
+	
 
 class LivePlotter(object):
 	"""
@@ -26,11 +30,11 @@ class LivePlotter(object):
 	def __init__(self, **kwargs):
 
 		self.name = kwargs.get("name", "live_plotter")
-		self.frequency = kwargs.get("frequency", 0.1)
+		self.frequency = kwargs.get("frequency", 0.5)
 		self.downsample = kwargs.get("downsample", 10)
 		self.point_nb = kwargs.get("point_nb", 100)
 		self.size = kwargs.get("size", (600, 300))
-		self.pen = kwargs.get("pen", "r")
+		self.pen = kwargs.get("pen", "b")
 		self.x_axis = kwargs.get("x_axis", "x")
 		self.y_axis = kwargs.get("y_axis", "y")
 		self.x_unit = kwargs.get("x_unit", "t")
@@ -49,7 +53,8 @@ class LivePlotter(object):
 		self.x, self.y = [], []
 
 		try:
-			self.win = kwargs.get("win", pg.GraphicsWindow().resize(self.size[0], self.size[1]))
+			self.win = kwargs.get("win", pg.GraphicsWindow())
+			self.win.resize(self.size[0], self.size[1])
 			self.p = self.win.addPlot(title=self.name)
 			self.p.setLabel('left', self.y_axis, units=self.y_unit)
 			self.p.setLabel('bottom', self.x_axis, units=self.x_unit)
@@ -59,6 +64,7 @@ class LivePlotter(object):
 		
 		except Exception as e:
 			print ("Unable to initialize Live Plotter")
+			traceback.print_exc()
 
 
 	def add(self, y, x=None):
@@ -105,6 +111,7 @@ class LivePlotter(object):
 		try:
 			self.win.close()
 		except Exception as e:
+			traceback.print_exc()
 			pass
 
 class PlotManager(object):
@@ -158,6 +165,7 @@ class PlotManager(object):
 			self.win.resize(self.size[0], self.size[1])
 		except Exception as e:
 			print ("Unable to initialize Plot Manager")
+			traceback.print_exc()
 
 	def add(self, name, y, x=None, **kwargs):
 		"""
@@ -202,5 +210,5 @@ class PlotManager(object):
 			wait = input("Press ENTER to close plots")
 		except Exception as e:
 			pass
-		for name, plot in self.plots.iteritems():
+		for name, plot in self.plots.items():
 			plot.close()
